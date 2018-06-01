@@ -1,0 +1,7 @@
+# min, hour, day of month, month, day of week
+
+* * * * * echo 'TEST'
+23 * 1 4 * echo 'ANOTHER TEST'
+24 17 31 4 * echo $(date '+%y')
+10 * * * * echo 'The 10th minute of the hour'
+38 * * * * echo 'TEST AGAIN'
