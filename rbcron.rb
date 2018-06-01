@@ -14,7 +14,7 @@ class Rbcron
   private
 
   def start_message
-    puts "Rbcron started"
+    puts "rbcron started"
     puts "Loaded schedule:"
     puts @schedule.join("\n")
     puts ""
@@ -34,12 +34,15 @@ class Rbcron
 
       jobs = @schedule.map do |job|
         next unless job_time(job) == @cron_time
+
+        # extract the command to run
         job.gsub(job_schedule(job), "").strip
       end
 
       jobs.compact.each do |job|
         puts @now
         stdout,stderr,status = Open3.capture3(job)
+
         if status.success?
           puts stdout
         else
@@ -53,12 +56,13 @@ class Rbcron
     job.match(/^[\*\d]{1,2}\s[\*\d]{1,2}\s[\*\d]{1,2}\s[\*\d]{1,2}\s[\*\d]{1,2}/).to_s
   end
 
+  # replaces wildcards (*) with the actual time & date values
   def job_time(job)
-    job_schedule(job).split.each_with_index.map do |i, n|
-      if i == "*"
-        @cron_time.split[n]
+    job_schedule(job).split.each_with_index.map do |value, index|
+      if value == "*"
+        @cron_time.split[index]
       else
-        i
+        value
       end
     end.join(" ")
   end
@@ -67,5 +71,5 @@ end
 begin 
   Rbcron.new(ARGV[0])
 rescue Exception => e
-  puts "\nRbcron has ended #{Time.now}.\n#{e}"
+  puts "\nrbcron has ended #{Time.now}.\n#{e}"
 end
